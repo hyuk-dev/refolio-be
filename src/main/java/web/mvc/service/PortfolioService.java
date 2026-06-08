@@ -1,7 +1,9 @@
 package web.mvc.service;
 
 import web.mvc.dto.portfolio.PortfolioCreateRequest;
+import web.mvc.dto.portfolio.PortfolioDetailResponse;
 import web.mvc.dto.portfolio.PortfolioSummaryResponse;
+import web.mvc.dto.portfolio.PortfolioUpdateRequest;
 
 import java.util.List;
 
@@ -10,9 +12,9 @@ public interface PortfolioService {
 
     public List<PortfolioSummaryResponse> getPortfolios();
 
-    public void getPortfolioById();
+    public PortfolioDetailResponse getPortfolioById(Long portfolioId);
 
-    public void updatePortfolio();
+    public void updatePortfolio(Long portfolioId, PortfolioUpdateRequest req);
 
-    public void deletePortfolio();
+    public void deletePortfolio(Long portfolioId);
 }

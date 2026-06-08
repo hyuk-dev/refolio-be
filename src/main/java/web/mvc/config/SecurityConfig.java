@@ -56,6 +56,8 @@ public class SecurityConfig {
                         .requestMatchers("/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/portfolios/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/portfolios").hasRole("USER")
+                        .requestMatchers(HttpMethod.PATCH, "/portfolios").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/portfolios").hasRole("USER")
                         .anyRequest().authenticated()
         );
 

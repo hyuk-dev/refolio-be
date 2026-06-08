@@ -48,6 +48,19 @@ public class Portfolio {
     @OneToMany(mappedBy = "portfolio")
     private List<Favorite> favorites;
 
+    /**
+     * 선택적 필드 업데이트: null인 필드는 덮어쓰지 않음
+     */
+    public void update(String title, String description, String content,
+                       String thumbnailImg, String githubUrl, String demoUrl) {
+        if (title != null) this.title = title;
+        if (description != null) this.description = description;
+        if (content != null) this.content = content;
+        if (thumbnailImg != null) this.thumbnailImg = thumbnailImg;
+        if (githubUrl != null) this.githubUrl = githubUrl;
+        if (demoUrl != null) this.demoUrl = demoUrl;
+    }
+
     @OneToMany(mappedBy = "portfolio")
     private List<Recommendation> recommendations;
 
@@ -62,5 +75,6 @@ public class Portfolio {
             joinColumns = @JoinColumn(name = "portfolio_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
+
 
 }

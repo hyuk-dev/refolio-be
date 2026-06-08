@@ -4,11 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.mvc.domain.Portfolio;
+import web.mvc.domain.User;
 import web.mvc.dto.portfolio.PortfolioCreateRequest;
+import web.mvc.dto.portfolio.PortfolioDetailResponse;
 import web.mvc.dto.portfolio.PortfolioSummaryResponse;
+import web.mvc.dto.portfolio.PortfolioUpdateRequest;
+import web.mvc.exception.CommonException;
+import web.mvc.exception.ErrorCode;
 import web.mvc.repository.PortfolioRepository;
+import web.mvc.security.CustomUserDetails;
+import web.mvc.util.SecurityUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +26,8 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Override
     @Transactional
     public void createPortfolio(PortfolioCreateRequest req) {
+        CustomUserDetails userDetails = SecurityUtils.currentUser();
+        User user = userDetails.getUser();
         Portfolio portfolio = Portfolio.builder()
                 .title(req.getTitle())
                 .description(req.getDescription())
@@ -25,12 +35,14 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .thumbnailImg(req.getThumbnailImg())
                 .githubUrl(req.getGithubUrl())
                 .demoUrl(req.getDemoUrl())
+                .user(user)
                 .build();
 
         portfolioRepository.save(portfolio);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PortfolioSummaryResponse> getPortfolios() {
         return portfolioRepository.findAll().stream()
                 .map(portfolio -> PortfolioSummaryResponse.builder()
@@ -43,22 +55,62 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .demoUrl(portfolio.getDemoUrl())
                 .createdAt(portfolio.getCreatedAt())
                 .updatedAt(portfolio.getUpdatedAt())
+                .writer(portfolio.getUser().getNickname())
                 // 작성자, 찜하기 수, 찜하기 여부, 추천 수 등 추가 정보는 추후 구현
                 .build()).toList();
     }
 
     @Override
-    public void getPortfolioById() {
+    @Transactional(readOnly = true)
+    public PortfolioDetailResponse getPortfolioById(Long portfolioId) {
+        if(portfolioId == null) {
+            throw new CommonException(ErrorCode.INVALID_REQUEST);
+        }
 
+        return portfolioRepository.findById(portfolioId).stream().map(portfolio -> PortfolioDetailResponse.builder()
+                .portfolioId(portfolio.getPortfolioId())
+                .title(portfolio.getTitle())
+                .description(portfolio.getDescription())
+                .content(portfolio.getContent())
+                .thumbnailImg(portfolio.getThumbnailImg())
+                .githubUrl(portfolio.getGithubUrl())
+                .demoUrl(portfolio.getDemoUrl())
+                .createdAt(portfolio.getCreatedAt())
+                .updatedAt(portfolio.getUpdatedAt())
+                .writer(portfolio.getUser().getNickname())
+                //찜하기 수, 찜하기 여부, 추천 수 등 추가 정보는 추후 구현
+                .build()).findFirst().orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND));
     }
 
     @Override
-    public void updatePortfolio() {
-
+    @Transactional
+    public void updatePortfolio(Long portfolioId, PortfolioUpdateRequest req) {
+        User user = SecurityUtils.currentUser().getUser();
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND));
+        if(!Objects.equals(portfolio.getUser().getUserId(), user.getUserId())) {
+            throw new CommonException(ErrorCode.FORBIDDEN);
+        }
+        portfolio.update(
+                req.getTitle(),
+                req.getDescription(),
+                req.getContent(),
+                req.getThumbnailImg(),
+                req.getGithubUrl(),
+                req.getDemoUrl()
+        );
+        portfolioRepository.save(portfolio);
     }
 
     @Override
-    public void deletePortfolio() {
-
+    @Transactional
+    public void deletePortfolio(Long portfolioId) {
+        User user = SecurityUtils.currentUser().getUser();
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND));
+        if(!Objects.equals(portfolio.getUser().getUserId(), user.getUserId())) {
+            throw new CommonException(ErrorCode.FORBIDDEN);
+        }
+        portfolioRepository.deleteById(portfolioId);
     }
 }

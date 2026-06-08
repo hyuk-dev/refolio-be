@@ -31,11 +31,11 @@ public class PortfolioSummaryResponse {
 
     private String writer; // 작성자
 
-    private Long favoriteCount; // 찜하기 수
-
-    private Long isRecommendation; // 찜하기 여부
-
-    private Long recommendationCount; // 추천 수
+//    private Long favoriteCount; // 찜하기 수
+//
+//    private boolean isRecommendation; // 찜하기 여부
+//
+//    private Long recommendationCount; // 추천 수
 
     // 태그 리스트 DTO 기반
 }
