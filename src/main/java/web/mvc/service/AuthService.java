@@ -1,10 +1,9 @@
 package web.mvc.service;
 
-import web.mvc.domain.User;
-import web.mvc.dto.SignupRequestDto;
+import web.mvc.dto.auth.SignupRequest;
 
 public interface AuthService {
-    void register(SignupRequestDto dto);
+    void register(SignupRequest dto);
 
     boolean isExist(String username);
 }

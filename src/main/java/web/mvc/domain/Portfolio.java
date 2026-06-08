@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,7 +55,7 @@ public class Portfolio {
     private List<Feedback> feedbacks;
 
     @OneToMany(mappedBy = "portfolio")
-    private List<Images> images;
+    private List<Image> images;
 
     @ManyToMany
     @JoinTable(name = "portfolio_tag",

@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.mvc.domain.User;
-import web.mvc.dto.SignupRequestDto;
+import web.mvc.dto.auth.SignupRequest;
 import web.mvc.exception.CommonException;
 import web.mvc.exception.ErrorCode;
 import web.mvc.repository.UserRepository;
@@ -18,7 +18,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void register(SignupRequestDto dto) {
+    public void register(SignupRequest dto) {
         User user = dto.toUser(dto);
         // 회원 등록 로직 구현
         if(isExist(user.getUsername())){
