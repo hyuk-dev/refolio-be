@@ -1,4 +1,4 @@
-package web.mvc.jwt;
+package web.mvc.auth;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,8 +8,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import web.mvc.domain.Member;
-import web.mvc.security.CustomMemberDetails;
+
+import web.mvc.domain.User;
+
+import web.mvc.security.CustomUserDetails;
 
 import java.io.IOException;
 
@@ -20,7 +22,8 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 				
         //request에서 Authorization 헤더를 찾음
         String authorization= request.getHeader("Authorization");
@@ -53,21 +56,21 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //토큰에서 username과 role 획득
         String username = jwtUtil.getUsername(token);
-        String id = jwtUtil.getId(token);
+        Long id = jwtUtil.getId(token);
         String role = jwtUtil.getRole(token);
 				
         //userEntity를 생성하여 값 set
-        Member member = new Member();
-        member.setId(id);
-        member.setName(username);
-        member.setRole(role);
-				
+        User user = new User();
+        user.setUserId(id);
+        user.setUsername(username);
+        user.setRole(role);
+
         //UserDetails에 회원 정보 객체 담기
-        CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
+        CustomUserDetails customUserDetails = new CustomUserDetails(user);
 
         //스프링 시큐리티 인증 토큰 생성
         Authentication authToken =
-                new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         //세션에 사용자 등록 - 세션이 만들어짐.
         SecurityContextHolder.getContext().setAuthentication(authToken);
         filterChain.doFilter(request, response);

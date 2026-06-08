@@ -5,13 +5,14 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import web.mvc.exception.MemberAuthenticationException;
+import web.mvc.exception.CommonException;
+import web.mvc.exception.ErrorCode;
 
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class DefaultExceptionAdvice {
-    @ExceptionHandler({MemberAuthenticationException.class})
+//    @ExceptionHandler({CommonException.class})
 //    public ProblemDetail signInExceptionHandle(MemberAuthenticationException e){
 //        ProblemDetail problemDetail = ProblemDetail.forStatus(e.getHttpStatus().value());
 //
@@ -21,15 +22,28 @@ public class DefaultExceptionAdvice {
 //
 //        return  problemDetail;
 //    }
+//    public ResponseEntity<?> signInExceptionHandle( e){
+//        ProblemDetail problemDetail = ProblemDetail.forStatus(e.getHttpStatus().value());
+//
+//        problemDetail.setTitle(e.getTitle());
+//        problemDetail.setDetail(e.getMessage());
+//        problemDetail.setProperty("timestamp", LocalDateTime.now());
+//
+//        return  ResponseEntity.status(700).body("오류");
+//    }
 
-    public ResponseEntity<?> signInExceptionHandle(MemberAuthenticationException e){
-        ProblemDetail problemDetail = ProblemDetail.forStatus(e.getHttpStatus().value());
+    @ExceptionHandler({CommonException.class})
+    public ResponseEntity<?> commonExceptionHandle(CommonException e){
+        ErrorCode errorCode = e.getErrorCode();
 
-        problemDetail.setTitle(e.getTitle());
+        ProblemDetail problemDetail = ProblemDetail.forStatus(errorCode.getStatus().value());
+        problemDetail.setTitle(errorCode.getStatus().getReasonPhrase());
         problemDetail.setDetail(e.getMessage());
         problemDetail.setProperty("timestamp", LocalDateTime.now());
 
-        return  ResponseEntity.status(700).body("오류");
+        return ResponseEntity
+                .status(errorCode.getStatus().value())
+                .body(problemDetail);
     }
 
 

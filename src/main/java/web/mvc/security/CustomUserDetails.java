@@ -4,20 +4,20 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import web.mvc.domain.Member;
+import web.mvc.domain.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 @Slf4j
-public class CustomMemberDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
     @Getter
-    private final Member member;
+    private final User user;
 
-    public CustomMemberDetails(Member member){
-        this.member= member;
-        log.info("member ={}" , member);
+    public CustomUserDetails(User user){
+        this.user= user;
+        log.info("user ={}" , user);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CustomMemberDetails implements UserDetails {
             }
         });*/
 
-        collection.add(()->member.getRole());
+        collection.add(()->user.getRole());
 
         return collection;
     }
@@ -40,13 +40,18 @@ public class CustomMemberDetails implements UserDetails {
     @Override
     public String getPassword() {
         log.info("getPassword .....");
-        return member.getPwd();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        log.info("getUsername...");
-        return member.getId(); //id
+        log.info("getUsername(id)...");
+        return user.getUsername(); //id
+    }
+
+    public Long getUserId() {
+        log.info("getUserId...");
+        return user.getUserId();
     }
 
     @Override

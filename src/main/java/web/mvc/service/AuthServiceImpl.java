@@ -1,29 +1,32 @@
 package web.mvc.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.mvc.domain.User;
+import web.mvc.dto.SignupRequestDto;
+import web.mvc.exception.CommonException;
+import web.mvc.exception.ErrorCode;
 import web.mvc.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
-    public void register(User user) {
+    public void register(SignupRequestDto dto) {
+        User user = dto.toUser(dto);
         // 회원 등록 로직 구현
-        System.out.println("회원 등록: " + user.getUsername());
-        userRepository.save(user);
-    }
+        if(isExist(user.getUsername())){
+            throw new CommonException(ErrorCode.DUPLICATED_USER);
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-    @Override
-    @Transactional
-    public void login(User user) {
-        // 로그인 로직 구현
-        System.out.println("로그인 시도: " + user.getUsername());
+        userRepository.save(user);
     }
 
     @Override

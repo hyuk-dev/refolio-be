@@ -1,10 +1,11 @@
-package web.mvc.jwt;
+package web.mvc.auth;
 
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import web.mvc.domain.Member;
+import web.mvc.domain.User;
+
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -29,9 +30,9 @@ public class JWTUtil {
         return re;
     }
 
-    public String getId(String token) {
+    public Long getId(String token) {
         log.info("getId(String token)  call");
-        String re = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("id", String.class);
+        Long re = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("id", Long.class);
         log.info("getIds(String token)  re = {}" ,re);
         return re;
     }
@@ -51,11 +52,11 @@ public class JWTUtil {
     }
 
     //public String createJwt(String username, String role, Long expiredMs) {
-    public String createJwt(Member member, String role, Long expiredMs) {
+    public String createJwt(User user, String role, Long expiredMs) {
         log.info("createJwt  call");
         return Jwts.builder()
-                .claim("username", member.getName()) //이름
-                .claim("id", member.getId()) //아이디
+                .claim("username", user.getUsername()) //이름
+                .claim("id", user.getUserId()) //아이디
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis())) //현재로그인된 시간
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
