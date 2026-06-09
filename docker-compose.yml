@@ -15,8 +15,29 @@ services:
       SPRING_PROFILES_ACTIVE: prod             # Spring Boot의 프로파일을 prod(운영)로 설정
 
     networks:
-      - mynet  # 동일한 네트워크에 연결된 다른 컨테이너들과 통신 가능
+      - refolio-network  # 동일한 네트워크에 연결된 다른 컨테이너들과 통신 가능
+
+  mysql:
+    image: mysql:8.4
+    container_name: refolio-mysql
+    restart: unless-stopped
+
+    environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}  # MySQL 루트 사용자 비밀번호
+        MYSQL_DATABASE: refolio_db              # 초기 생성될 데이터베이스 이름
+        MYSQL_USER: ${MYSQL_USER}              # MySQL 사용자명
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        TZ: 'Asia/Seoul'
+
+    volumes:
+      - mysql-data:/var/lib/mysql  # MySQL 데이터를 호스트의 볼륨에 저장하여 데이터 유지
+
+    networks:
+      - refolio-network
 
 networks:
-  mynet:
+  refolio-network:
     external: true  # 이미 생성된 외부 네트워크(mynet 등)를 사용. docker network create mynet 필요
+
+volumes:
+  mysql-data:  # MySQL 데이터를 저장할 볼륨
