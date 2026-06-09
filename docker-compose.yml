@@ -37,7 +37,6 @@ services:
 
 networks:
   refolio-network:
-    external: true  # 이미 생성된 외부 네트워크(mynet 등)를 사용. docker network create mynet 필요
 
 volumes:
   mysql-data:  # MySQL 데이터를 저장할 볼륨
