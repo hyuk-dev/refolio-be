@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -53,6 +54,22 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/signup").permitAll()
                         .requestMatchers("/login").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/portfolios/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/portfolios").hasRole("USER")
+                        .requestMatchers(HttpMethod.PATCH, "/portfolios").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/portfolios").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/feedbacks").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/feedbacks/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.PATCH, "/feedbacks/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/feedbacks/**").hasRole("USER")
                         .anyRequest().authenticated()
         );
 
