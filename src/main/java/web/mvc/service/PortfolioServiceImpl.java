@@ -1,16 +1,22 @@
 package web.mvc.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.mvc.domain.Portfolio;
 import web.mvc.domain.User;
+import web.mvc.dto.feedback.FeedbackResponse;
 import web.mvc.dto.portfolio.PortfolioCreateRequest;
 import web.mvc.dto.portfolio.PortfolioDetailResponse;
 import web.mvc.dto.portfolio.PortfolioSummaryResponse;
 import web.mvc.dto.portfolio.PortfolioUpdateRequest;
 import web.mvc.exception.CommonException;
 import web.mvc.exception.ErrorCode;
+import web.mvc.repository.FeedbackRepository;
 import web.mvc.repository.PortfolioRepository;
 import web.mvc.security.CustomUserDetails;
 import web.mvc.util.SecurityUtils;
@@ -22,6 +28,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class PortfolioServiceImpl implements PortfolioService {
     private final PortfolioRepository portfolioRepository;
+    private final FeedbackRepository feedbackRepository;
 
     @Override
     @Transactional
@@ -43,8 +50,10 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PortfolioSummaryResponse> getPortfolios() {
-        return portfolioRepository.findAll().stream()
+    public Page<PortfolioSummaryResponse> getPortfolios(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return portfolioRepository.findAll(pageable)
                 .map(portfolio -> PortfolioSummaryResponse.builder()
                 .portfolioId(portfolio.getPortfolioId())
                 .title(portfolio.getTitle())
@@ -56,8 +65,9 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .createdAt(portfolio.getCreatedAt())
                 .updatedAt(portfolio.getUpdatedAt())
                 .writer(portfolio.getUser().getNickname())
-                // 작성자, 찜하기 수, 찜하기 여부, 추천 수 등 추가 정보는 추후 구현
-                .build()).toList();
+                .feedbackCount(feedbackRepository.countByPortfolio_PortfolioId(portfolio.getPortfolioId()))
+                 // 작성자, 찜하기 수, 찜하기 여부, 추천 수 등 추가 정보는 추후 구현
+                .build());
     }
 
     @Override
@@ -66,6 +76,15 @@ public class PortfolioServiceImpl implements PortfolioService {
         if(portfolioId == null) {
             throw new CommonException(ErrorCode.INVALID_REQUEST);
         }
+
+        List<FeedbackResponse> feedbackList = feedbackRepository.findByPortfolio_PortfolioId(portfolioId).stream()
+                .map(feedback -> FeedbackResponse.builder()
+                        .feedbackId(feedback.getFeedbackId())
+                        .content(feedback.getContent())
+                        .createdAt(feedback.getCreatedAt())
+                        .updatedAt(feedback.getUpdatedAt())
+                        .writer(feedback.getUser().getNickname())
+                        .build()).toList();
 
         return portfolioRepository.findById(portfolioId).stream().map(portfolio -> PortfolioDetailResponse.builder()
                 .portfolioId(portfolio.getPortfolioId())
@@ -78,6 +97,8 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .createdAt(portfolio.getCreatedAt())
                 .updatedAt(portfolio.getUpdatedAt())
                 .writer(portfolio.getUser().getNickname())
+                .feedbackList(feedbackList)
+                .feedbackCount((long) feedbackList.size())
                 //찜하기 수, 찜하기 여부, 추천 수 등 추가 정보는 추후 구현
                 .build()).findFirst().orElseThrow(() -> new CommonException(ErrorCode.NOT_FOUND));
     }

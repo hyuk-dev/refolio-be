@@ -31,6 +31,8 @@ public class PortfolioSummaryResponse {
 
     private String writer; // 작성자
 
+    private Long feedbackCount; // 피드백 수
+
 //    private Long favoriteCount; // 찜하기 수
 //
 //    private boolean isRecommendation; // 찜하기 여부

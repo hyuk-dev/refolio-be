@@ -1,6 +1,7 @@
 package web.mvc.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import web.mvc.dto.portfolio.PortfolioCreateRequest;
@@ -24,9 +25,11 @@ public class PortfolioController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getPortfolios() {
-        List<PortfolioSummaryResponse> list = portfolioService.getPortfolios();
-        return ResponseEntity.ok(list);
+    public ResponseEntity<?> getPortfolios(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<PortfolioSummaryResponse> result = portfolioService.getPortfolios(page, size);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{portfolioId}")

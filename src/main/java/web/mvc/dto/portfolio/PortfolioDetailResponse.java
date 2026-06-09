@@ -2,6 +2,7 @@ package web.mvc.dto.portfolio;
 
 import lombok.*;
 import web.mvc.domain.*;
+import web.mvc.dto.feedback.FeedbackResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +30,10 @@ public class PortfolioDetailResponse {
     private LocalDateTime updatedAt;
 
     private String writer;
+
+    private Long feedbackCount; // 피드백 수
+
+    private List<FeedbackResponse> feedbackList;
 
 //    private User user;
 
