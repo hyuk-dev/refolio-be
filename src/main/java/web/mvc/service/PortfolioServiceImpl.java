@@ -52,7 +52,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Override
     @Transactional(readOnly = true)
     public Page<PortfolioSummaryResponse> getPortfolios(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page, size);
 
         return portfolioRepository.findPortfolioWithFeedbacks(pageable);
 

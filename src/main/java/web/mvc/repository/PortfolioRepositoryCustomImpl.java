@@ -40,14 +40,16 @@ public class PortfolioRepositoryCustomImpl implements PortfolioRepositoryCustom 
                 .groupBy(portfolio.portfolioId)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(portfolio.createdAt.desc())
                 .fetch();
 
         // 2. 전체 데이터 개수 조회
-        long totalCount = queryFactory
+        Long totalCount = queryFactory
                 .select(portfolio.count())
                 .from(portfolio)
                 .fetchOne();
+
         //Page로 반환 로직
-        return new PageImpl<>(portfolioList, pageable, totalCount != 0 ? totalCount : 1);
+        return new PageImpl<>(portfolioList, pageable, totalCount != null ? totalCount : 0L);
     }
 }
