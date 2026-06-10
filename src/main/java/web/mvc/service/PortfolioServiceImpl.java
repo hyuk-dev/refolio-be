@@ -18,6 +18,7 @@ import web.mvc.exception.CommonException;
 import web.mvc.exception.ErrorCode;
 import web.mvc.repository.FeedbackRepository;
 import web.mvc.repository.PortfolioRepository;
+import web.mvc.repository.PortfolioRepositoryCustom;
 import web.mvc.security.CustomUserDetails;
 import web.mvc.util.SecurityUtils;
 
@@ -53,21 +54,23 @@ public class PortfolioServiceImpl implements PortfolioService {
     public Page<PortfolioSummaryResponse> getPortfolios(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        return portfolioRepository.findAll(pageable)
-                .map(portfolio -> PortfolioSummaryResponse.builder()
-                .portfolioId(portfolio.getPortfolioId())
-                .title(portfolio.getTitle())
-                .description(portfolio.getDescription())
-                .content(portfolio.getContent())
-                .thumbnailImg(portfolio.getThumbnailImg())
-                .githubUrl(portfolio.getGithubUrl())
-                .demoUrl(portfolio.getDemoUrl())
-                .createdAt(portfolio.getCreatedAt())
-                .updatedAt(portfolio.getUpdatedAt())
-                .writer(portfolio.getUser().getNickname())
-                .feedbackCount(feedbackRepository.countByPortfolio_PortfolioId(portfolio.getPortfolioId()))
-                 // 작성자, 찜하기 수, 찜하기 여부, 추천 수 등 추가 정보는 추후 구현
-                .build());
+        return portfolioRepository.findPortfolioWithFeedbacks(pageable);
+
+//        return portfolioRepository.findAll(pageable)
+//                .map(portfolio -> PortfolioSummaryResponse.builder()
+//                .portfolioId(portfolio.getPortfolioId())
+//                .title(portfolio.getTitle())
+//                .description(portfolio.getDescription())
+//                .content(portfolio.getContent())
+//                .thumbnailImg(portfolio.getThumbnailImg())
+//                .githubUrl(portfolio.getGithubUrl())
+//                .demoUrl(portfolio.getDemoUrl())
+//                .createdAt(portfolio.getCreatedAt())
+//                .updatedAt(portfolio.getUpdatedAt())
+//                .writer(portfolio.getUser().getNickname())
+//                .feedbackCount(feedbackRepository.countByPortfolio_PortfolioId(portfolio.getPortfolioId()))
+//                 // 작성자, 찜하기 수, 찜하기 여부, 추천 수 등 추가 정보는 추후 구현
+//                .build());
     }
 
     @Override
