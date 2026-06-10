@@ -47,6 +47,10 @@ jobs:
           echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env  # DB 사용자명
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env  # DB 비밀번호
           echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env  # 도커 허브 사용자명
+          echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> .env  # S3 버킷명
+          echo "S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }}" >> .env  # S3 액세스 키
+          echo "S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }}" >> .env  # S3 비밀 키
+          echo "AWS_S3_BUCKET"=${{ secrets.AWS_S3_BUCKET }} >> .env  # S3 버킷명
 
       - name: EC2에 docker-compose.yml + .env 전송
         uses: appleboy/scp-action@v0.1.7  # EC2로 파일 전송하는 액션(SCP 방식)

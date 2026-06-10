@@ -70,6 +70,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/feedbacks/**").hasRole("USER")
                         .requestMatchers(HttpMethod.PATCH, "/feedbacks/**").hasRole("USER")
                         .requestMatchers(HttpMethod.DELETE, "/feedbacks/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/images").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/images/**").hasRole("USER")
                         .anyRequest().authenticated()
         );
 
