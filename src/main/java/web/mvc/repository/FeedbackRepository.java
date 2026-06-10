@@ -2,6 +2,7 @@ package web.mvc.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import web.mvc.domain.Feedback;
 
 import java.util.Collection;
@@ -14,4 +15,5 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     List<Feedback> findByUsername(String username);
 
     List<Feedback> findByPortfolio_PortfolioId(Long portfolioPortfolioId);
+
 }

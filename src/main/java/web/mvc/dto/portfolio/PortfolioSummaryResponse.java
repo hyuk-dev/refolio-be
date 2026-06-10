@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @ToString
 @Builder
+@AllArgsConstructor
 public class PortfolioSummaryResponse {
     private Long portfolioId;
 
